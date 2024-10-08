@@ -13,7 +13,19 @@ app.append(header);
 const button = document.createElement("button");
 button.innerText = "🔥";
 
+//counter element
+const counter = document.createElement("div");
+counter.id = "counter";
+let count = 0;
+counter.innerText = `You're ${count} times hotter!`;
+
+//append counter
+document.body.appendChild(counter);
+
+//button listener
 button.addEventListener("click", () => {
+    count += 1;
+    counter.innerText = `You're ${count} times hotter!`;
     alert(`You're on fire!`);
 });
 
