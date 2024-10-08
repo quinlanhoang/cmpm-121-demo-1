@@ -24,9 +24,15 @@ document.body.appendChild(counter);
 
 //button listener
 button.addEventListener("click", () => {
-    count += 1;
-    counter.innerText = `You're ${count} times hotter!`;
-    alert(`You're on fire!`);
+  count += 1;
+  counter.innerText = `You're ${count} times hotter!`;
+  alert(`You're on fire!`);
 });
 
 app.append(button);
+
+//incremental counter
+setInterval(() => {
+    count += 1;
+    counter.innerText = `You're ${count} times hotter!`;
+}, 1000);
