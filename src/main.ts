@@ -1,22 +1,22 @@
-/* Reformatted using Brace for more cohesive legibility */
-
 import "./style.css";
 
 // constants
 const GAME_NAME = "That's Hot";
 document.title = GAME_NAME;
 
-const GROWTH_RATE_PER_SECOND = 1; // units per second
+//const INCREMENT_INTERVAL_MS = 1000;
+const UPGRADE_COST = 10;
 
 // DOM Elements
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = createHeader();
-const button = createButton();
+const flameButton = createFlameButton();
 const counter = createCounter();
+const upgradeButton = createUpgradeButton();
 let count = 0;
-
 let lastTimestamp = 0;
-let fractionalCount = 0;  // keeps track of fractional increments
+let fractionalCount = 0;
+let growthRate = 0; 
 
 // functions
 function createHeader(): HTMLHeadingElement {
@@ -25,7 +25,7 @@ function createHeader(): HTMLHeadingElement {
   return header;
 }
 
-function createButton(): HTMLButtonElement {
+function createFlameButton(): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "🔥";
   button.addEventListener("click", handleButtonClick);
@@ -39,25 +39,49 @@ function createCounter(): HTMLDivElement {
   return counter;
 }
 
+function createUpgradeButton(): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.innerText = "Light a Spark (10)";
+  button.disabled = true; 
+  button.style.opacity = "0.5"; 
+  button.id = "upgrade-button";
+  button.addEventListener("click", handleUpgradeClick);
+  return button;
+}
+
 function handleButtonClick() {
-  incrementCounter(1);  // increase by 1 on a click
+  incrementCounter(1);  
   alert("You're on fire!");
+}
+
+function handleUpgradeClick() {
+  if (count >= UPGRADE_COST) {
+    growthRate += 1;  // increase growth rate
+    incrementCounter(-UPGRADE_COST);  // deduct from the current count
+    updateUpgradeButtonState();  // update button state
+  }
 }
 
 function incrementCounter(amount: number) {
   fractionalCount += amount;
   const integerIncrement = Math.floor(fractionalCount);
   count += integerIncrement;
-  fractionalCount -= integerIncrement;  // keeps the fractional remainder
+  fractionalCount -= integerIncrement;  // keep the fractional remainder
   updateCounterText();
 }
 
 function getCounterText(count: number): string {
-  return `You're ${count} times hotter!`;
+  return `You're ${Math.floor(count)} times hotter!`;
 }
 
 function updateCounterText() {
   counter.innerText = getCounterText(count);
+}
+
+function updateUpgradeButtonState() {
+  // enable button only if the player has enough
+  upgradeButton.disabled = count < UPGRADE_COST;
+  upgradeButton.style.opacity = count < UPGRADE_COST ? "0.5" : "1.0";
 }
 
 function animate(currentTimestamp: number) {
@@ -66,19 +90,23 @@ function animate(currentTimestamp: number) {
     const elapsed = (currentTimestamp - lastTimestamp) / 1000;
 
     // increment fractional count based on elapsed time and growth rate
-    incrementCounter(GROWTH_RATE_PER_SECOND * elapsed);
+    incrementCounter(growthRate * elapsed);
     
     // grow the button icon
-    button.style.transform = `scale(${1 + (count * 0.02)})`;
+    flameButton.style.transform = `scale(${1 + (count * 0.02)})`;
+
+    // update upgrade button state
+    updateUpgradeButtonState();
   }
   lastTimestamp = currentTimestamp;
 
   requestAnimationFrame(animate);
 }
 
-// initial Setup
-app.append(header, button);
+// Initial Setup
+app.append(header, flameButton);
 document.body.appendChild(counter);
+document.body.appendChild(upgradeButton);
 
-// start the animation loop
+// Start the animation loop
 requestAnimationFrame(animate);
