@@ -40,7 +40,17 @@ h1 {
   position: absolute;
   top: 15px;
   right: 15px;
-  font-size: 30px;
+}
+
+#growth-rate-display {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+#status-display {
+  position: absolute;
+  bottom: 15px;
 }
 
 button {
