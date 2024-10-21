@@ -4,6 +4,8 @@ import "./style.css";
 const GAME_NAME = "That's Hot";
 document.title = GAME_NAME;
 
+const PRICE_FACTOR = 1.15;
+
 // DOM Elements
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = createHeader();
@@ -12,8 +14,7 @@ const counter = createCounter();
 let count = 0;
 let lastTimestamp = 0;
 let fractionalCount = 0;
-let growthRate = 0; 
-
+let growthRate = 0;
 
 // upgrade system
 type Upgrade = {
@@ -24,9 +25,9 @@ type Upgrade = {
 };
 
 const upgrades: Upgrade[] = [
-  { name: "Matches", cost: 10, growthRateIncrement: 0.1, purchased: 0},
-  { name: "Campfires", cost: 100, growthRateIncrement: 2, purchased: 0},
-  { name: "Stovetops", cost: 1000, growthRateIncrement: 50, purchased: 0},
+  { name: "Matches", cost: 10, growthRateIncrement: 0.1, purchased: 0 },
+  { name: "Campfires", cost: 100, growthRateIncrement: 2, purchased: 0 },
+  { name: "Stovetops", cost: 1000, growthRateIncrement: 50, purchased: 0 },
 ];
 
 // UI elements
@@ -85,9 +86,17 @@ function handleUpgradeClick(upgrade: Upgrade) {
     growthRate += upgrade.growthRateIncrement;
     incrementCounter(-upgrade.cost);
     upgrade.purchased++;
+    
+    upgrade.cost *= PRICE_FACTOR;
+    
     updateGrowthRateDisplay();
     updateStatusDisplay();
-    upgradeButtons.forEach((button, i) => updateUpgradeButtonState(button, upgrades[i]));
+    upgradeButtons.forEach((button, i) => {
+
+    // upgrade inner text
+      button.innerText = `${upgrades[i].name} (${upgrades[i].cost.toFixed(1)})`;
+      updateUpgradeButtonState(button, upgrades[i]);
+    });
   }
 }
 
@@ -105,7 +114,7 @@ function getCounterText(count: number): string {
 
 function getStatusDisplayText(): string {
   let statusText = "Upgrades Bought: ";
-  upgrades.forEach(upgrade => {
+  upgrades.forEach((upgrade) => {
     statusText += `${upgrade.name}: ${upgrade.purchased}, `;
   });
   return statusText.slice(0, -2);
@@ -140,9 +149,11 @@ function animate(currentTimestamp: number) {
 
     incrementCounter(growthRate * elapsed);
 
-    flameButton.style.transform = `scale(${1 + (count * 0.02)})`;
+    flameButton.style.transform = `scale(${1 + count * 0.02})`;
 
-    upgradeButtons.forEach((button, i) => updateUpgradeButtonState(button, upgrades[i]));
+    upgradeButtons.forEach((button, i) =>
+      updateUpgradeButtonState(button, upgrades[i]),
+    );
   }
   lastTimestamp = currentTimestamp;
 
@@ -155,7 +166,7 @@ const growthRateDisplay = createGrowthRateDisplay();
 app.append(header, flameButton);
 document.body.append(growthRateDisplay, counter);
 
-const upgradeButtons: HTMLButtonElement[] = upgrades.map(upgrade => {
+const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
   const button = createUpgradeButton(upgrade);
   document.body.appendChild(button);
   return button;
