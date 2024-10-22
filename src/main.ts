@@ -86,14 +86,13 @@ function handleUpgradeClick(upgrade: Upgrade) {
     growthRate += upgrade.growthRateIncrement;
     incrementCounter(-upgrade.cost);
     upgrade.purchased++;
-    
+
     upgrade.cost *= PRICE_FACTOR;
-    
+
     updateGrowthRateDisplay();
     updateStatusDisplay();
     upgradeButtons.forEach((button, i) => {
-
-    // upgrade inner text
+      // upgrade inner text
       button.innerText = `${upgrades[i].name} (${upgrades[i].cost.toFixed(1)})`;
       updateUpgradeButtonState(button, upgrades[i]);
     });
