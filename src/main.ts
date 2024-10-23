@@ -18,15 +18,17 @@ let growthRate = 0;
 
 // buy & upgrade system
 interface Item {
-  name: string,
-  fireCost: number,   
-  heatRate: number   
-};
+  name: string;
+  fireCost: number;
+  heatRate: number;
+}
 
 const availableItems: Item[] = [
   { name: "Matches", fireCost: 10, heatRate: 0.1 },
   { name: "Campfires", fireCost: 100, heatRate: 2 },
   { name: "Stovetops", fireCost: 1000, heatRate: 50 },
+  { name: "Pyro", fireCost: 10000, heatRate: 100 },
+  { name: "Fireball", fireCost: 100000, heatRate: 1000 },
 ];
 
 type UpgradeState = {
@@ -34,10 +36,18 @@ type UpgradeState = {
   currentCost: number;
 };
 
-const upgradeStates: UpgradeState[] = availableItems.map(item => ({
+const upgradeStates: UpgradeState[] = availableItems.map((item) => ({
   purchased: 0,
   currentCost: item.fireCost,
 }));
+
+// utility function to format numbers
+function formatNumber(value: number): string {
+  if (value >= 1000) {
+    return (value / 1000).toFixed(1) + 'K';
+  }
+  return value.toFixed(0);
+}
 
 // UI Elements
 function createGrowthRateDisplay(): HTMLDivElement {
@@ -77,11 +87,18 @@ function createCounter(): HTMLDivElement {
 
 function createItemButton(item: Item, index: number): HTMLButtonElement {
   const button = document.createElement("button");
-  button.innerText = `${item.name} (${upgradeStates[index].currentCost})`;
-  button.style.opacity = "0.5";
+  button.className = "upgrade unavailable"; // default class for toggling
+  button.innerText = `${item.name} (${formatNumber(upgradeStates[index].currentCost)})`;
   button.id = `${item.name.toLowerCase()}-button`;
   button.addEventListener("click", () => handleItemClick(item, index));
   updateItemButtonState(button, index);
+
+  // tooltip
+  const tooltip = document.createElement("span");
+  tooltip.className = "tooltip";
+  tooltip.textContent = getUpgradeTooltip(item.name);
+  button.appendChild(tooltip);
+
   return button;
 }
 
@@ -102,7 +119,7 @@ function handleItemClick(item: Item, index: number) {
     updateGrowthRateDisplay();
     updateStatusDisplay();
     itemButtons.forEach((button, i) => {
-      button.innerText = `${availableItems[i].name} (${upgradeStates[i].currentCost.toFixed(1)})`;
+      button.innerText = `${availableItems[i].name} (${formatNumber(upgradeStates[i].currentCost)})`;
       updateItemButtonState(button, i);
     });
   }
@@ -134,8 +151,30 @@ function updateCounterText() {
 
 function updateItemButtonState(button: HTMLButtonElement, index: number) {
   const currentUpgradeState = upgradeStates[index];
-  button.disabled = count < currentUpgradeState.currentCost;
-  button.style.opacity = count < currentUpgradeState.currentCost ? "0.5" : "1.0";
+  const isAvailable = count >= currentUpgradeState.currentCost;
+  button.disabled = !isAvailable;
+
+  // update button border based on availability
+  button.classList.toggle("available", isAvailable);
+  button.classList.toggle("unavailable", !isAvailable);
+}
+
+// upgrade descriptions
+function getUpgradeTooltip(name: string): string {
+  switch (name) {
+    case "Matches":
+      return "A quick firestarter!";
+    case "Campfires":
+      return "Lets make some s'mores!";
+    case "Stovetops":
+      return "Lets cook something HOT!";
+    case "Pyro":
+      return "It's like a flamethrower.";
+    case "Fireball":
+      return "Too hot to handle.";
+    default:
+      return "Upgrade your fire power!";
+  }
 }
 
 function updateGrowthRateDisplay() {
@@ -174,13 +213,26 @@ const growthRateDisplay = createGrowthRateDisplay();
 app.append(header, flameButton);
 document.body.append(growthRateDisplay, counter);
 
+const upgradeContainer = document.createElement("div");
+document.body.appendChild(upgradeContainer);
+
 const itemButtons: HTMLButtonElement[] = availableItems.map((item, index) => {
   const button = createItemButton(item, index);
-  document.body.appendChild(button);
+  const row = Math.floor(index / 3);  // determines which row the button should be in
+  let rowDiv = document.getElementById(`upgrade-row-${row}`) as HTMLDivElement;
+  
+  if (!rowDiv) {
+    rowDiv = document.createElement("div");
+    rowDiv.id = `upgrade-row-${row}`;
+    rowDiv.style.display = "flex"; 
+    upgradeContainer.appendChild(rowDiv);
+  }
+  
+  rowDiv.appendChild(button);
   return button;
 });
 
 document.body.appendChild(statusDisplay);
 
-// start the animation loop
+// Start the animation loop
 requestAnimationFrame(animate);
