@@ -16,7 +16,7 @@ const upgradeButton = createUpgradeButton();
 let count = 0;
 let lastTimestamp = 0;
 let fractionalCount = 0;
-let growthRate = 0; 
+let growthRate = 0;
 
 // functions
 function createHeader(): HTMLHeadingElement {
@@ -42,23 +42,22 @@ function createCounter(): HTMLDivElement {
 function createUpgradeButton(): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Light a Spark (10)";
-  button.disabled = true; 
-  button.style.opacity = "0.5"; 
+  button.disabled = true;
+  button.style.opacity = "0.5";
   button.id = "upgrade-button";
   button.addEventListener("click", handleUpgradeClick);
   return button;
 }
 
 function handleButtonClick() {
-  incrementCounter(1);  
-  alert("You're on fire!");
+  incrementCounter(1);
 }
 
 function handleUpgradeClick() {
   if (count >= UPGRADE_COST) {
-    growthRate += 1;  // increase growth rate
-    incrementCounter(-UPGRADE_COST);  // deduct from the current count
-    updateUpgradeButtonState();  // update button state
+    growthRate += 1; // increase growth rate
+    incrementCounter(-UPGRADE_COST); // deduct from the current count
+    updateUpgradeButtonState(); // update button state
   }
 }
 
@@ -66,7 +65,7 @@ function incrementCounter(amount: number) {
   fractionalCount += amount;
   const integerIncrement = Math.floor(fractionalCount);
   count += integerIncrement;
-  fractionalCount -= integerIncrement;  // keep the fractional remainder
+  fractionalCount -= integerIncrement; // keep the fractional remainder
   updateCounterText();
 }
 
@@ -91,9 +90,9 @@ function animate(currentTimestamp: number) {
 
     // increment fractional count based on elapsed time and growth rate
     incrementCounter(growthRate * elapsed);
-    
+
     // grow the button icon
-    flameButton.style.transform = `scale(${1 + (count * 0.02)})`;
+    flameButton.style.transform = `scale(${1 + count * 0.02})`;
 
     // update upgrade button state
     updateUpgradeButtonState();
