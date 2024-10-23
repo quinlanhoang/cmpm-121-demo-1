@@ -16,21 +16,30 @@ let lastTimestamp = 0;
 let fractionalCount = 0;
 let growthRate = 0;
 
-// upgrade system
-type Upgrade = {
-  name: string;
-  cost: number;
-  growthRateIncrement: number;
-  purchased: number;
+// buy & upgrade system
+interface Item {
+  name: string,
+  fireCost: number,   
+  heatRate: number   
 };
 
-const upgrades: Upgrade[] = [
-  { name: "Matches", cost: 10, growthRateIncrement: 0.1, purchased: 0 },
-  { name: "Campfires", cost: 100, growthRateIncrement: 2, purchased: 0 },
-  { name: "Stovetops", cost: 1000, growthRateIncrement: 50, purchased: 0 },
+const availableItems: Item[] = [
+  { name: "Matches", fireCost: 10, heatRate: 0.1 },
+  { name: "Campfires", fireCost: 100, heatRate: 2 },
+  { name: "Stovetops", fireCost: 1000, heatRate: 50 },
 ];
 
-// UI elements
+type UpgradeState = {
+  purchased: number;
+  currentCost: number;
+};
+
+const upgradeStates: UpgradeState[] = availableItems.map(item => ({
+  purchased: 0,
+  currentCost: item.fireCost,
+}));
+
+// UI Elements
 function createGrowthRateDisplay(): HTMLDivElement {
   const growthRateDisplay = document.createElement("div");
   growthRateDisplay.id = "growth-rate-display";
@@ -66,13 +75,13 @@ function createCounter(): HTMLDivElement {
   return counter;
 }
 
-function createUpgradeButton(upgrade: Upgrade): HTMLButtonElement {
+function createItemButton(item: Item, index: number): HTMLButtonElement {
   const button = document.createElement("button");
-  button.innerText = `${upgrade.name} (${upgrade.cost})`;
+  button.innerText = `${item.name} (${upgradeStates[index].currentCost})`;
   button.style.opacity = "0.5";
-  button.id = `${upgrade.name.toLowerCase()}-button`;
-  button.addEventListener("click", () => handleUpgradeClick(upgrade));
-  updateUpgradeButtonState(button, upgrade);
+  button.id = `${item.name.toLowerCase()}-button`;
+  button.addEventListener("click", () => handleItemClick(item, index));
+  updateItemButtonState(button, index);
   return button;
 }
 
@@ -81,20 +90,20 @@ function handleButtonClick() {
   alert("You're on fire!");
 }
 
-function handleUpgradeClick(upgrade: Upgrade) {
-  if (count >= upgrade.cost) {
-    growthRate += upgrade.growthRateIncrement;
-    incrementCounter(-upgrade.cost);
-    upgrade.purchased++;
+function handleItemClick(item: Item, index: number) {
+  const currentUpgradeState = upgradeStates[index];
 
-    upgrade.cost *= PRICE_FACTOR;
+  if (count >= currentUpgradeState.currentCost) {
+    growthRate += item.heatRate;
+    incrementCounter(-currentUpgradeState.currentCost);
+    currentUpgradeState.purchased++;
+    currentUpgradeState.currentCost *= PRICE_FACTOR;
 
     updateGrowthRateDisplay();
     updateStatusDisplay();
-    upgradeButtons.forEach((button, i) => {
-      // upgrade inner text
-      button.innerText = `${upgrades[i].name} (${upgrades[i].cost.toFixed(1)})`;
-      updateUpgradeButtonState(button, upgrades[i]);
+    itemButtons.forEach((button, i) => {
+      button.innerText = `${availableItems[i].name} (${upgradeStates[i].currentCost.toFixed(1)})`;
+      updateItemButtonState(button, i);
     });
   }
 }
@@ -113,8 +122,8 @@ function getCounterText(count: number): string {
 
 function getStatusDisplayText(): string {
   let statusText = "Upgrades Bought: ";
-  upgrades.forEach((upgrade) => {
-    statusText += `${upgrade.name}: ${upgrade.purchased}, `;
+  availableItems.forEach((item, index) => {
+    statusText += `${item.name}: ${upgradeStates[index].purchased}, `;
   });
   return statusText.slice(0, -2);
 }
@@ -123,9 +132,10 @@ function updateCounterText() {
   counter.innerText = getCounterText(count);
 }
 
-function updateUpgradeButtonState(button: HTMLButtonElement, upgrade: Upgrade) {
-  button.disabled = count < upgrade.cost;
-  button.style.opacity = count < upgrade.cost ? "0.5" : "1.0";
+function updateItemButtonState(button: HTMLButtonElement, index: number) {
+  const currentUpgradeState = upgradeStates[index];
+  button.disabled = count < currentUpgradeState.currentCost;
+  button.style.opacity = count < currentUpgradeState.currentCost ? "0.5" : "1.0";
 }
 
 function updateGrowthRateDisplay() {
@@ -145,13 +155,12 @@ function updateStatusDisplay() {
 function animate(currentTimestamp: number) {
   if (lastTimestamp !== 0) {
     const elapsed = (currentTimestamp - lastTimestamp) / 1000;
-
     incrementCounter(growthRate * elapsed);
 
     flameButton.style.transform = `scale(${1 + count * 0.02})`;
 
-    upgradeButtons.forEach((button, i) =>
-      updateUpgradeButtonState(button, upgrades[i]),
+    itemButtons.forEach((button, index) =>
+      updateItemButtonState(button, index),
     );
   }
   lastTimestamp = currentTimestamp;
@@ -165,8 +174,8 @@ const growthRateDisplay = createGrowthRateDisplay();
 app.append(header, flameButton);
 document.body.append(growthRateDisplay, counter);
 
-const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
-  const button = createUpgradeButton(upgrade);
+const itemButtons: HTMLButtonElement[] = availableItems.map((item, index) => {
+  const button = createItemButton(item, index);
   document.body.appendChild(button);
   return button;
 });
