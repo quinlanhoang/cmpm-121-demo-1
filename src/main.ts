@@ -41,14 +41,6 @@ const upgradeStates: UpgradeState[] = availableItems.map((item) => ({
   currentCost: item.fireCost,
 }));
 
-// utility function to format numbers
-function formatNumber(value: number): string {
-  if (value >= 1000) {
-    return (value / 1000).toFixed(1) + "K";
-  }
-  return value.toFixed(0);
-}
-
 // UI Elements
 function createGrowthRateDisplay(): HTMLDivElement {
   const growthRateDisplay = document.createElement("div");
@@ -113,15 +105,28 @@ function handleItemClick(item: Item, index: number) {
     growthRate += item.heatRate;
     incrementCounter(-currentUpgradeState.currentCost);
     currentUpgradeState.purchased++;
+
     currentUpgradeState.currentCost *= PRICE_FACTOR;
 
     updateGrowthRateDisplay();
     updateStatusDisplay();
     itemButtons.forEach((button, i) => {
-      button.innerText = `${availableItems[i].name} (${formatNumber(upgradeStates[i].currentCost)})`;
+      button.innerText = `${availableItems[i].name} (${preciseFormat(upgradeStates[i].currentCost)})`;
       updateItemButtonState(button, i);
     });
   }
+}
+
+function preciseFormat(value: number): string {
+  if (value < 1000) {
+    return value % 1 === 0 ? value.toString() : value.toFixed(1);
+  }
+  return (value / 1000).toFixed(1) + "K";
+}
+
+function formatNumber(value: number): string {
+  // use preciseFormat for smaller numbers, but retain original behavior for larger values
+  return preciseFormat(value);
 }
 
 function incrementCounter(amount: number) {
