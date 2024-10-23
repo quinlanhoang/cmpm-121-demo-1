@@ -44,7 +44,7 @@ const upgradeStates: UpgradeState[] = availableItems.map((item) => ({
 // utility function to format numbers
 function formatNumber(value: number): string {
   if (value >= 1000) {
-    return (value / 1000).toFixed(1) + 'K';
+    return (value / 1000).toFixed(1) + "K";
   }
   return value.toFixed(0);
 }
@@ -104,7 +104,6 @@ function createItemButton(item: Item, index: number): HTMLButtonElement {
 
 function handleButtonClick() {
   incrementCounter(1);
-  alert("You're on fire!");
 }
 
 function handleItemClick(item: Item, index: number) {
@@ -218,16 +217,16 @@ document.body.appendChild(upgradeContainer);
 
 const itemButtons: HTMLButtonElement[] = availableItems.map((item, index) => {
   const button = createItemButton(item, index);
-  const row = Math.floor(index / 3);  // determines which row the button should be in
+  const row = Math.floor(index / 3); // determines which row the button should be in
   let rowDiv = document.getElementById(`upgrade-row-${row}`) as HTMLDivElement;
-  
+
   if (!rowDiv) {
     rowDiv = document.createElement("div");
     rowDiv.id = `upgrade-row-${row}`;
-    rowDiv.style.display = "flex"; 
+    rowDiv.style.display = "flex";
     upgradeContainer.appendChild(rowDiv);
   }
-  
+
   rowDiv.appendChild(button);
   return button;
 });
