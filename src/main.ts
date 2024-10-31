@@ -148,12 +148,18 @@ function updateItemButtonState(button: HTMLButtonElement, index: number) {
 
 function getUpgradeTooltip(name: string): string {
   switch (name) {
-    case "Matches": return "A quick firestarter!";
-    case "Campfires": return "Lets make some s'mores!";
-    case "Stovetops": return "Lets cook something HOT!";
-    case "Pyro": return "It's like a flamethrower.";
-    case "Fireball": return "Too hot to handle.";
-    default: return "Upgrade your fire power!";
+    case "Matches":
+      return "A quick firestarter!";
+    case "Campfires":
+      return "Lets make some s'mores!";
+    case "Stovetops":
+      return "Lets cook something HOT!";
+    case "Pyro":
+      return "It's like a flamethrower.";
+    case "Fireball":
+      return "Too hot to handle.";
+    default:
+      return "Upgrade your fire power!";
   }
 }
 
@@ -178,7 +184,9 @@ function animate(currentTimestamp: number) {
     incrementCounter(growthRate * elapsed);
     flameButton.style.transform = `scale(${1 + count * 0.02})`;
 
-    itemButtons.forEach((button, index) => updateItemButtonState(button, index));
+    itemButtons.forEach((button, index) =>
+      updateItemButtonState(button, index),
+    );
   }
   lastTimestamp = currentTimestamp;
   requestAnimationFrame(animate);
