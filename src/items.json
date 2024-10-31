@@ -1,7 +1,7 @@
 [
-    { "name": "Matches", "fireCost": 10, "heatRate": 0.1 },
-    { "name": "Campfires", "fireCost": 100, "heatRate": 2 },
-    { "name": "Stovetops", "fireCost": 1000, "heatRate": 50 },
-    { "name": "Pyro", "fireCost": 10000, "heatRate": 100 },
-    { "name": "Fireball", "fireCost": 100000, "heatRate": 1000 }
-  ]
+  { "name": "Matches", "fireCost": 10, "heatRate": 0.1 },
+  { "name": "Campfires", "fireCost": 100, "heatRate": 2 },
+  { "name": "Stovetops", "fireCost": 1000, "heatRate": 50 },
+  { "name": "Pyro", "fireCost": 10000, "heatRate": 100 },
+  { "name": "Fireball", "fireCost": 100000, "heatRate": 1000 }
+]

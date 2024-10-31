@@ -5,7 +5,7 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "moduleResolution": "node",  // Change from 'bundler' to 'node'
+    "moduleResolution": "node", // Change from 'bundler' to 'node'
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -14,8 +14,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "resolveJsonModule": true,   // Add this line
-    "esModuleInterop": true      // Add this line
+    "resolveJsonModule": true, // Add this line
+    "esModuleInterop": true // Add this line
   },
   "include": ["src"]
 }
