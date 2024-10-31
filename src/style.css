@@ -40,7 +40,17 @@ h1 {
   position: absolute;
   top: 15px;
   right: 15px;
-  font-size: 30px;
+}
+
+#growth-rate-display {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+#status-display {
+  position: absolute;
+  bottom: 15px;
 }
 
 button {
@@ -53,6 +63,47 @@ button {
   position: relative;
 }
 
+button.upgrade {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 5px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+
+button.upgrade.available {
+  border-color: limegreen;
+}
+
+button.upgrade.unavailable {
+  border-color: crimson;
+}
+
+/* Tooltip styling */
+button.upgrade .tooltip {
+  visibility: hidden;
+  width: 150px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+button.upgrade:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 #upgrade-button {
   position: absolute;
   bottom: 15px;
@@ -63,7 +114,6 @@ button {
   border-radius: 5px;
 }
 
-/* Light Theme Adjustments */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
