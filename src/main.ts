@@ -1,4 +1,5 @@
-import "./style.css";
+import './style.css';
+import items from './items.json'; // Importing the items from the JSON file
 
 // Constants
 const GAME_NAME = "That's Hot";
@@ -12,20 +13,15 @@ let lastTimestamp = 0;
 let fractionalCount = 0;
 let growthRate = 0;
 
-// Interfaces and Data
+// Define the interface for your items
 interface Item {
   name: string;
   fireCost: number;
   heatRate: number;
 }
 
-const availableItems: Item[] = [
-  { name: "Matches", fireCost: 10, heatRate: 0.1 },
-  { name: "Campfires", fireCost: 100, heatRate: 2 },
-  { name: "Stovetops", fireCost: 1000, heatRate: 50 },
-  { name: "Pyro", fireCost: 10000, heatRate: 100 },
-  { name: "Fireball", fireCost: 100000, heatRate: 1000 },
-];
+// Use the imported items directly
+const availableItems: Item[] = items;
 
 type UpgradeState = {
   purchased: number;
@@ -37,7 +33,7 @@ const upgradeStates: UpgradeState[] = availableItems.map((item) => ({
   currentCost: item.fireCost,
 }));
 
-// DOM Elements
+// DOM Elements and Initialization
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = createHeader();
 const flameButton = createFlameButton();
@@ -148,18 +144,12 @@ function updateItemButtonState(button: HTMLButtonElement, index: number) {
 
 function getUpgradeTooltip(name: string): string {
   switch (name) {
-    case "Matches":
-      return "A quick firestarter!";
-    case "Campfires":
-      return "Lets make some s'mores!";
-    case "Stovetops":
-      return "Lets cook something HOT!";
-    case "Pyro":
-      return "It's like a flamethrower.";
-    case "Fireball":
-      return "Too hot to handle.";
-    default:
-      return "Upgrade your fire power!";
+    case "Matches": return "A quick firestarter!";
+    case "Campfires": return "Lets make some s'mores!";
+    case "Stovetops": return "Lets cook something HOT!";
+    case "Pyro": return "It's like a flamethrower.";
+    case "Fireball": return "Too hot to handle.";
+    default: return "Upgrade your fire power!";
   }
 }
 
@@ -184,9 +174,7 @@ function animate(currentTimestamp: number) {
     incrementCounter(growthRate * elapsed);
     flameButton.style.transform = `scale(${1 + count * 0.02})`;
 
-    itemButtons.forEach((button, index) =>
-      updateItemButtonState(button, index),
-    );
+    itemButtons.forEach((button, index) => updateItemButtonState(button, index));
   }
   lastTimestamp = currentTimestamp;
   requestAnimationFrame(animate);
