@@ -1,5 +1,5 @@
-import './style.css';
-import items from './items.json'; // Importing the items from the JSON file
+import "./style.css";
+import items from "./items.json"; // Importing the items from the JSON file
 
 // Constants
 const GAME_TITLE = "That's Hot";
@@ -42,7 +42,11 @@ const upgradeStatusDisplay = createUpgradeStatusDisplay();
 const heatGrowthDisplay = createHeatGrowthDisplay();
 
 appContainer.append(gameHeader, fireButton);
-document.body.append(heatGrowthDisplay, heatCounterDisplay, upgradeStatusDisplay);
+document.body.append(
+  heatGrowthDisplay,
+  heatCounterDisplay,
+  upgradeStatusDisplay,
+);
 
 // Function Definitions: UI Creation
 function createGameHeader(): HTMLHeadingElement {
@@ -111,7 +115,8 @@ function adjustHeatCount(amount: number) {
   updateHeatCounterText();
 }
 
-function formatCost(value: number): string { // Combined into a single function
+function formatCost(value: number): string {
+  // Combined into a single function
   if (value < 1000) {
     return value % 1 === 0 ? value.toString() : value.toFixed(1);
   }
@@ -144,12 +149,18 @@ function updateUpgradeButtonState(button: HTMLButtonElement, index: number) {
 
 function getUpgradeTooltip(name: string): string {
   switch (name) {
-    case "Matches": return "A quick firestarter!";
-    case "Campfires": return "Let's make some s'mores!";
-    case "Stovetops": return "Let's cook something HOT!";
-    case "Pyro": return "It's like a flamethrower.";
-    case "Fireball": return "Too hot to handle.";
-    default: return "Upgrade your fire power!";
+    case "Matches":
+      return "A quick firestarter!";
+    case "Campfires":
+      return "Let's make some s'mores!";
+    case "Stovetops":
+      return "Let's cook something HOT!";
+    case "Pyro":
+      return "It's like a flamethrower.";
+    case "Fireball":
+      return "Too hot to handle.";
+    default:
+      return "Upgrade your fire power!";
   }
 }
 
@@ -174,7 +185,9 @@ function animateGameLoop(currentTimestamp: number) {
     adjustHeatCount(heatGrowthRate * elapsed);
     fireButton.style.transform = `scale(${1 + currentHeatCount * 0.02})`;
 
-    itemButtons.forEach((button, index) => updateUpgradeButtonState(button, index));
+    itemButtons.forEach((button, index) =>
+      updateUpgradeButtonState(button, index),
+    );
   }
   lastAnimationTimestamp = currentTimestamp;
   requestAnimationFrame(animateGameLoop);
@@ -184,27 +197,34 @@ function animateGameLoop(currentTimestamp: number) {
 const upgradeContainer = document.createElement("div");
 document.body.appendChild(upgradeContainer);
 
-const itemButtons: HTMLButtonElement[] = availableUpgradeItems.map((item, index) => {
-  const button = createUpgradeButton(item, index);
-  const row = Math.floor(index / 3);
-  let rowDiv = document.getElementById(`upgrade-row-${row}`) as HTMLDivElement;
+const itemButtons: HTMLButtonElement[] = availableUpgradeItems.map(
+  (item, index) => {
+    const button = createUpgradeButton(item, index);
+    const row = Math.floor(index / 3);
+    let rowDiv = document.getElementById(
+      `upgrade-row-${row}`,
+    ) as HTMLDivElement;
 
-  if (!rowDiv) {
-    rowDiv = document.createElement("div");
-    rowDiv.id = `upgrade-row-${row}`;
-    rowDiv.style.display = "flex";
-    upgradeContainer.appendChild(rowDiv);
-  }
+    if (!rowDiv) {
+      rowDiv = document.createElement("div");
+      rowDiv.id = `upgrade-row-${row}`;
+      rowDiv.style.display = "flex";
+      upgradeContainer.appendChild(rowDiv);
+    }
 
-  rowDiv.appendChild(button);
-  return button;
-});
+    rowDiv.appendChild(button);
+    return button;
+  },
+);
 
 // Start the animation loop
 requestAnimationFrame(animateGameLoop);
 
 // Helper Function for Upgrade Button Creation
-function createUpgradeButton(item: UpgradeItem, index: number): HTMLButtonElement {
+function createUpgradeButton(
+  item: UpgradeItem,
+  index: number,
+): HTMLButtonElement {
   const button = document.createElement("button");
   button.className = "upgrade unavailable";
   button.innerText = `${item.name} (${formatCost(upgradeStatuses[index].currentPurchaseCost)})`;
