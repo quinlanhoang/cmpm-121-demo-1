@@ -1,142 +1,142 @@
-import "./style.css";
-import items from "./items.json"; // Importing the items from the JSON file
+import './style.css';
+import items from './items.json'; // Importing the items from the JSON file
 
 // Constants
-const GAME_NAME = "That's Hot";
-document.title = GAME_NAME;
+const GAME_TITLE = "That's Hot";
+document.title = GAME_TITLE;
 
-const PRICE_FACTOR = 1.15;
+const FIRE_COST_MULTIPLIER = 1.15;
 
 // Initial State
-let count = 0;
-let lastTimestamp = 0;
-let fractionalCount = 0;
-let growthRate = 0;
+let currentHeatCount = 0;
+let lastAnimationTimestamp = 0;
+let fractionalHeatCount = 0;
+let heatGrowthRate = 0;
 
 // Define the interface for your items
-interface Item {
+interface UpgradeItem {
   name: string;
   fireCost: number;
   heatRate: number;
 }
 
 // Use the imported items directly
-const availableItems: Item[] = items;
+const availableUpgradeItems: UpgradeItem[] = items;
 
-type UpgradeState = {
-  purchased: number;
-  currentCost: number;
+type UpgradeStatus = {
+  purchasedCount: number;
+  currentPurchaseCost: number;
 };
 
-const upgradeStates: UpgradeState[] = availableItems.map((item) => ({
-  purchased: 0,
-  currentCost: item.fireCost,
+const upgradeStatuses: UpgradeStatus[] = availableUpgradeItems.map((item) => ({
+  purchasedCount: 0,
+  currentPurchaseCost: item.fireCost,
 }));
 
 // DOM Elements and Initialization
-const app: HTMLDivElement = document.querySelector("#app")!;
-const header = createHeader();
-const flameButton = createFlameButton();
-const counter = createCounter();
-const statusDisplay = createStatusDisplay();
-const growthRateDisplay = createGrowthRateDisplay();
+const appContainer: HTMLDivElement = document.querySelector("#app")!;
+const gameHeader = createGameHeader();
+const fireButton = createFireButton();
+const heatCounterDisplay = createHeatCounterDisplay();
+const upgradeStatusDisplay = createUpgradeStatusDisplay();
+const heatGrowthDisplay = createHeatGrowthDisplay();
 
-app.append(header, flameButton);
-document.body.append(growthRateDisplay, counter, statusDisplay);
+appContainer.append(gameHeader, fireButton);
+document.body.append(heatGrowthDisplay, heatCounterDisplay, upgradeStatusDisplay);
 
 // Function Definitions: UI Creation
-function createHeader(): HTMLHeadingElement {
+function createGameHeader(): HTMLHeadingElement {
   const header = document.createElement("h1");
-  header.innerHTML = GAME_NAME;
+  header.innerHTML = GAME_TITLE;
   return header;
 }
 
-function createFlameButton(): HTMLButtonElement {
+function createFireButton(): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "🔥";
-  button.addEventListener("click", handleButtonClick);
+  button.addEventListener("click", onFireButtonClick);
   return button;
 }
 
-function createCounter(): HTMLDivElement {
+function createHeatCounterDisplay(): HTMLDivElement {
   const counter = document.createElement("div");
   counter.id = "counter";
-  counter.innerText = getCounterText(0);
+  counter.innerText = getHeatCounterText(0);
   return counter;
 }
 
-function createStatusDisplay(): HTMLDivElement {
+function createUpgradeStatusDisplay(): HTMLDivElement {
   const statusDisplay = document.createElement("div");
   statusDisplay.id = "status-display";
-  statusDisplay.innerText = getStatusDisplayText();
+  statusDisplay.innerText = getUpgradeStatusText();
   return statusDisplay;
 }
 
-function createGrowthRateDisplay(): HTMLDivElement {
+function createHeatGrowthDisplay(): HTMLDivElement {
   const growthRateDisplay = document.createElement("div");
   growthRateDisplay.id = "growth-rate-display";
-  growthRateDisplay.innerText = `Current Growth Rate: ${growthRate.toFixed(1)}/sec`;
+  growthRateDisplay.innerText = `Current Growth Rate: ${heatGrowthRate.toFixed(1)}/sec`;
   return growthRateDisplay;
 }
 
 // Event Handlers
-function handleButtonClick() {
-  incrementCounter(1);
+function onFireButtonClick() {
+  adjustHeatCount(1);
 }
 
-function handleItemClick(item: Item, index: number) {
-  const currentUpgradeState = upgradeStates[index];
+function handleUpgradeItemClick(item: UpgradeItem, index: number) {
+  const status = upgradeStatuses[index];
 
-  if (count >= currentUpgradeState.currentCost) {
-    growthRate += item.heatRate;
-    incrementCounter(-currentUpgradeState.currentCost);
-    currentUpgradeState.purchased++;
-    currentUpgradeState.currentCost *= PRICE_FACTOR;
+  if (currentHeatCount >= status.currentPurchaseCost) {
+    heatGrowthRate += item.heatRate;
+    adjustHeatCount(-status.currentPurchaseCost);
+    status.purchasedCount++;
+    status.currentPurchaseCost *= FIRE_COST_MULTIPLIER;
 
-    updateGrowthRateDisplay();
-    updateStatusDisplay();
+    updateHeatGrowthDisplay();
+    updateUpgradeStatusDisplay();
     itemButtons.forEach((button, i) => {
-      button.innerText = `${availableItems[i].name} (${preciseFormat(upgradeStates[i].currentCost)})`;
-      updateItemButtonState(button, i);
+      button.innerText = `${availableUpgradeItems[i].name} (${formatCost(upgradeStatuses[i].currentPurchaseCost)})`;
+      updateUpgradeButtonState(button, i);
     });
   }
 }
 
 // Utility Functions and Logic
-function incrementCounter(amount: number) {
-  fractionalCount += amount;
-  const integerIncrement = Math.floor(fractionalCount);
-  count += integerIncrement;
-  fractionalCount -= integerIncrement;
-  updateCounterText();
+function adjustHeatCount(amount: number) {
+  fractionalHeatCount += amount;
+  const integerIncrement = Math.floor(fractionalHeatCount);
+  currentHeatCount += integerIncrement;
+  fractionalHeatCount -= integerIncrement;
+  updateHeatCounterText();
 }
 
-function preciseFormat(value: number): string {
+function formatCost(value: number): string { // Combined into a single function
   if (value < 1000) {
     return value % 1 === 0 ? value.toString() : value.toFixed(1);
   }
   return (value / 1000).toFixed(1) + "K";
 }
 
-function getCounterText(count: number): string {
-  return `You're ${Math.floor(count)} times hotter!`;
+function getHeatCounterText(heatCount: number): string {
+  return `You're ${Math.floor(heatCount)} times hotter!`;
 }
 
-function getStatusDisplayText(): string {
+function getUpgradeStatusText(): string {
   let statusText = "Upgrades Bought: ";
-  availableItems.forEach((item, index) => {
-    statusText += `${item.name}: ${upgradeStates[index].purchased}, `;
+  availableUpgradeItems.forEach((item, index) => {
+    statusText += `${item.name}: ${upgradeStatuses[index].purchasedCount}, `;
   });
   return statusText.slice(0, -2);
 }
 
-function updateCounterText() {
-  counter.innerText = getCounterText(count);
+function updateHeatCounterText() {
+  heatCounterDisplay.innerText = getHeatCounterText(currentHeatCount);
 }
 
-function updateItemButtonState(button: HTMLButtonElement, index: number) {
-  const currentUpgradeState = upgradeStates[index];
-  const isAvailable = count >= currentUpgradeState.currentCost;
+function updateUpgradeButtonState(button: HTMLButtonElement, index: number) {
+  const status = upgradeStatuses[index];
+  const isAvailable = currentHeatCount >= status.currentPurchaseCost;
   button.disabled = !isAvailable;
   button.classList.toggle("available", isAvailable);
   button.classList.toggle("unavailable", !isAvailable);
@@ -144,56 +144,48 @@ function updateItemButtonState(button: HTMLButtonElement, index: number) {
 
 function getUpgradeTooltip(name: string): string {
   switch (name) {
-    case "Matches":
-      return "A quick firestarter!";
-    case "Campfires":
-      return "Lets make some s'mores!";
-    case "Stovetops":
-      return "Lets cook something HOT!";
-    case "Pyro":
-      return "It's like a flamethrower.";
-    case "Fireball":
-      return "Too hot to handle.";
-    default:
-      return "Upgrade your fire power!";
+    case "Matches": return "A quick firestarter!";
+    case "Campfires": return "Let's make some s'mores!";
+    case "Stovetops": return "Let's cook something HOT!";
+    case "Pyro": return "It's like a flamethrower.";
+    case "Fireball": return "Too hot to handle.";
+    default: return "Upgrade your fire power!";
   }
 }
 
-function updateGrowthRateDisplay() {
+function updateHeatGrowthDisplay() {
   const growthRateElement = document.getElementById("growth-rate-display");
   if (growthRateElement) {
-    growthRateElement.innerText = `Current Growth Rate: ${growthRate.toFixed(1)}/sec`;
+    growthRateElement.innerText = `Current Growth Rate: ${heatGrowthRate.toFixed(1)}/sec`;
   }
 }
 
-function updateStatusDisplay() {
+function updateUpgradeStatusDisplay() {
   const statusElement = document.getElementById("status-display");
   if (statusElement) {
-    statusElement.innerText = getStatusDisplayText();
+    statusElement.innerText = getUpgradeStatusText();
   }
 }
 
 // Game Loop
-function animate(currentTimestamp: number) {
-  if (lastTimestamp !== 0) {
-    const elapsed = (currentTimestamp - lastTimestamp) / 1000;
-    incrementCounter(growthRate * elapsed);
-    flameButton.style.transform = `scale(${1 + count * 0.02})`;
+function animateGameLoop(currentTimestamp: number) {
+  if (lastAnimationTimestamp !== 0) {
+    const elapsed = (currentTimestamp - lastAnimationTimestamp) / 1000;
+    adjustHeatCount(heatGrowthRate * elapsed);
+    fireButton.style.transform = `scale(${1 + currentHeatCount * 0.02})`;
 
-    itemButtons.forEach((button, index) =>
-      updateItemButtonState(button, index),
-    );
+    itemButtons.forEach((button, index) => updateUpgradeButtonState(button, index));
   }
-  lastTimestamp = currentTimestamp;
-  requestAnimationFrame(animate);
+  lastAnimationTimestamp = currentTimestamp;
+  requestAnimationFrame(animateGameLoop);
 }
 
 // Setup Upgrade Buttons
 const upgradeContainer = document.createElement("div");
 document.body.appendChild(upgradeContainer);
 
-const itemButtons: HTMLButtonElement[] = availableItems.map((item, index) => {
-  const button = createItemButton(item, index);
+const itemButtons: HTMLButtonElement[] = availableUpgradeItems.map((item, index) => {
+  const button = createUpgradeButton(item, index);
   const row = Math.floor(index / 3);
   let rowDiv = document.getElementById(`upgrade-row-${row}`) as HTMLDivElement;
 
@@ -209,16 +201,16 @@ const itemButtons: HTMLButtonElement[] = availableItems.map((item, index) => {
 });
 
 // Start the animation loop
-requestAnimationFrame(animate);
+requestAnimationFrame(animateGameLoop);
 
-// Helper Function for Item Button Creation
-function createItemButton(item: Item, index: number): HTMLButtonElement {
+// Helper Function for Upgrade Button Creation
+function createUpgradeButton(item: UpgradeItem, index: number): HTMLButtonElement {
   const button = document.createElement("button");
   button.className = "upgrade unavailable";
-  button.innerText = `${item.name} (${formatNumber(upgradeStates[index].currentCost)})`;
+  button.innerText = `${item.name} (${formatCost(upgradeStatuses[index].currentPurchaseCost)})`;
   button.id = `${item.name.toLowerCase()}-button`;
-  button.addEventListener("click", () => handleItemClick(item, index));
-  updateItemButtonState(button, index);
+  button.addEventListener("click", () => handleUpgradeItemClick(item, index));
+  updateUpgradeButtonState(button, index);
 
   const tooltip = document.createElement("span");
   tooltip.className = "tooltip";
@@ -226,9 +218,4 @@ function createItemButton(item: Item, index: number): HTMLButtonElement {
   button.appendChild(tooltip);
 
   return button;
-}
-
-// Ensure Every Aspect is Covered in Logical Order
-function formatNumber(value: number): string {
-  return preciseFormat(value);
 }
