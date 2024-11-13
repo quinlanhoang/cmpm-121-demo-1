@@ -5,7 +5,7 @@
   font-weight: 400;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #a34048;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -23,10 +23,22 @@ body {
   min-height: 100vh;
 }
 
+/* https://github.com/EllieM-gd/cmpm-121-demo-1/blob/main/src/style.css title wiggle */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
   z-index: 1;
+  animation: wiggle 0.5s ease-in-out infinite;
 }
 
 #app {
@@ -63,7 +75,7 @@ button {
   border-radius: 5px;
 }
 
-/* Tooltip Styles */
+/* tooltip Styles */
 .upgrade {
   position: relative;
 }
@@ -87,11 +99,11 @@ button {
   display: block;
 }
 
-/* Light Theme Adjustments */
+/* light theme adjustments */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #a34048;
   }
 
   a:hover {
